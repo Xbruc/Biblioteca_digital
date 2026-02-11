@@ -648,12 +648,16 @@ def visualizar_arquivo(path: Path, altura=700):
 
     # PDF
     if ext == ".pdf":
-        st.markdown(f"### 📄 {path.name}")
+        try:
+            st.pdf(str(path), height=700)
+        except Exception as e:
+            st.warning("Visualização inline não suportada neste ambiente.")
+            
+            with open(path, "rb") as f:
+                pdf_bytes = f.read()
     
-        with open(path, "rb") as f:
-            pdf_bytes = f.read()
-        st.info("Visualização inline bloqueada pelo navegador na nuvem.")
         return
+
 
 
 
