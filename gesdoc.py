@@ -652,14 +652,6 @@ def visualizar_arquivo(path: Path, altura=700):
     
         with open(path, "rb") as f:
             pdf_bytes = f.read()
-    
-        st.download_button(
-            "📥 Baixar PDF",
-            data=pdf_bytes,
-            file_name=path.name,
-            mime="application/pdf"
-        )
-    
         st.info("Visualização inline bloqueada pelo navegador na nuvem.")
         return
 
