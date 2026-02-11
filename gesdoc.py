@@ -1,4 +1,4 @@
-quero isso implementado nesse scrip import os
+import os
 from pathlib import Path
 import pandas as pd
 import streamlit as st
