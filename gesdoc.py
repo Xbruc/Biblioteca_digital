@@ -648,14 +648,19 @@ def visualizar_arquivo(path: Path, altura=700):
 
     # PDF
     if ext == ".pdf":
-        st.markdown(f"### 📄 Visualização do PDF: {path.name}")
-        try:
-            st.pdf(str(path), height=altura, key=f"pdf_viewer_{file_id}")
-        except Exception:
-            with open(path, "rb") as f:
-                b64 = base64.b64encode(f.read()).decode("utf-8")
-            html = f'<iframe src="data:application/pdf;base64,{b64}" width="100%" height="{altura}px"></iframe>'
-            st.components.v1.html(html, height=altura + 50)
+        st.markdown(f"### 📄 {path.name}")
+    
+        with open(path, "rb") as f:
+            pdf_bytes = f.read()
+    
+        st.download_button(
+            "📥 Baixar PDF",
+            data=pdf_bytes,
+            file_name=path.name,
+            mime="application/pdf"
+        )
+    
+        st.info("Visualização inline bloqueada pelo navegador na nuvem.")
         return
 
 
