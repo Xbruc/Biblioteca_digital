@@ -34,7 +34,7 @@ import tempfile
 fiona.drvsupport.supported_drivers['KML'] = 'rw'
 fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
-load_dotenv()
+#load_dotenv()
 
 #USERS = os.getenv("AUTH_USERS", "").split(",")
 #PASSWORD_HASH_ENV = os.getenv("AUTH_PASSWORD_HASH")
