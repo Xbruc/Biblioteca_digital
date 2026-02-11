@@ -1,4 +1,4 @@
-import os
+onde colocar get_drive_service no meu codigo import os
 from pathlib import Path
 import pandas as pd
 import streamlit as st
@@ -28,102 +28,6 @@ import geopandas as gpd
 import fiona
 import zipfile
 import tempfile
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-
-# =========================
-# GOOGLE DRIVE SERVICE
-# =========================
-def get_drive_service():
-
-    creds_dict = {
-        "type": st.secrets["GDRIVE_TYPE"],
-        "project_id": st.secrets["GDRIVE_PROJECT_ID"],
-        "private_key_id": st.secrets["GDRIVE_PRIVATE_KEY_ID"],
-        "private_key": st.secrets["GDRIVE_PRIVATE_KEY"],
-        "client_email": st.secrets["GDRIVE_CLIENT_EMAIL"],
-        "client_id": st.secrets["GDRIVE_CLIENT_ID"],
-        "auth_uri": st.secrets["GDRIVE_AUTH_URI"],
-        "token_uri": st.secrets["GDRIVE_TOKEN_URI"],
-        "auth_provider_x509_cert_url": st.secrets["GDRIVE_AUTH_PROVIDER_X509_CERT_URL"],
-        "client_x509_cert_url": st.secrets["GDRIVE_CLIENT_X509_CERT_URL"],
-    }
-
-    creds = service_account.Credentials.from_service_account_info(
-        creds_dict,
-        scopes=["https://www.googleapis.com/auth/drive"]
-    )
-
-    service = build("drive", "v3", credentials=creds)
-    return service
-# =========================
-# GOOGLE DRIVE HELPERS
-# =========================
-
-def listar_arquivos_drive(pasta_id=None):
-    service = get_drive_service()
-
-    query = "trashed = false"
-    if pasta_id:
-        query += f" and '{pasta_id}' in parents"
-
-    results = service.files().list(
-        q=query,
-        pageSize=1000,
-        fields="files(id, name, mimeType, parents)"
-    ).execute()
-
-    return results.get("files", [])
-
-
-def upload_arquivo_drive(file_bytes, nome, pasta_id):
-    service = get_drive_service()
-
-    from googleapiclient.http import MediaIoBaseUpload
-    import io
-
-    file_stream = io.BytesIO(file_bytes)
-
-    media = MediaIoBaseUpload(
-        file_stream,
-        mimetype="application/octet-stream",
-        resumable=True
-    )
-
-    file_metadata = {
-        "name": nome,
-        "parents": [pasta_id]
-    }
-
-    file = service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields="id"
-    ).execute()
-
-    return file.get("id")
-
-
-def download_arquivo_drive(file_id):
-    service = get_drive_service()
-    from googleapiclient.http import MediaIoBaseDownload
-    import io
-
-    request = service.files().get_media(fileId=file_id)
-    file_stream = io.BytesIO()
-    downloader = MediaIoBaseDownload(file_stream, request)
-
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-
-    file_stream.seek(0)
-    return file_stream.read()
-
-
-def deletar_arquivo_drive(file_id):
-    service = get_drive_service()
-    service.files().delete(fileId=file_id).execute()
 
 
 # Habilita suporte a KML
@@ -549,10 +453,8 @@ with st.expander("➕ Adicionar documentos", expanded=False):
     if files and st.button("Salvar arquivos"):
         target.mkdir(parents=True, exist_ok=True)
         for upf in files:
-            upload_arquivo_drive(
-                upf.getbuffer(),
-                upf.name,
-                PASTA_RAIZ_ID  # ID da pasta principal no Drive)
+            with open(target / upf.name, "wb") as out:
+                out.write(upf.getbuffer())
         build_index.clear()
         st.success("Arquivos adicionados com sucesso.")
         st.rerun()
@@ -1058,12 +960,14 @@ def render_lista_arquivos_com_acoes(view_df, build_index_func=None):
                 )
             else:
                 # Download normal para outras extensões
-                file_bytes = download_arquivo_drive(r["id"])
-                st.download_button(
-                    "⬇ Baixar",
-                    data=file_bytes,
-                    file_name=r["name"]
-                )
+                with open(caminho, "rb") as f:
+                    st.download_button(
+                        "⬇ Baixar",
+                        f,
+                        file_name=arquivo,
+                        key=f"dl_{i}",
+                        width="stretch"
+                    )
 
         # --- LOGICA DE VISUALIZAR (C2) ---
         with c2:
@@ -1130,7 +1034,7 @@ def _confirmar_exclusao_dialog(build_index_func=None):
 
         with c2:
             if st.button("Confirmar exclusão", type="primary", use_container_width=True):
-                deletar_arquivo_drive(file_id)
+                del_path.unlink(missing_ok=True)
 
                 if build_index_func:
                     build_index_func.clear()
