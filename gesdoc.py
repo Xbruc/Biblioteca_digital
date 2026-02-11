@@ -1082,17 +1082,17 @@ def render_storage_usage(BASE_DIR):
 
     data_dir = BASE_DIR.resolve()
 
-    # 🔒 Forma segura de obter o disco no Windows
-    drive = Path(data_dir.drive + "\\")  # ex: C:\
-
-    # Tamanhos
-    data_size = get_directory_size(data_dir)
-    disk = shutil.disk_usage(drive)
+    # 🔹 No Linux (Streamlit Cloud), use "/"
+    # 🔹 No Windows local, também funciona
+    disk = shutil.disk_usage("/")
 
     total_disk = disk.total
     free_disk = disk.free
+    used_disk = disk.used
 
-    percent_data = (data_size / total_disk) * 100
+    data_size = get_directory_size(data_dir)
+
+    percent_data = (data_size / total_disk) * 100 if total_disk > 0 else 0
 
     def gb(x):
         return x / (1024 ** 3)
@@ -1100,7 +1100,6 @@ def render_storage_usage(BASE_DIR):
     st.markdown(
         f"""
         **📁 Diretório monitorado:** `{data_dir}`  
-        **💽 Disco:** `{drive}`  
         """
     )
 
