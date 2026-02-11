@@ -647,9 +647,9 @@ def visualizar_arquivo(path: Path, altura=700):
         return
 
     if ext == ".pdf":
-    st.markdown(f"### 📄 {path.name}")
-    st.pdf(str(path), height=700)
-    retur
+        st.markdown(f"### 📄 {path.name}")
+        st.pdf(str(path), height=700)
+        retur
 
 
     # # WORD
