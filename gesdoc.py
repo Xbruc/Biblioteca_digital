@@ -56,10 +56,8 @@ def autenticar():
     if st.session_state.auth:
         return True
 
-
-
-    # Container centralizado corretamente
     container = st.container()
+
     with container:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown('<div class="login-title">🔐 Acesso</div>', unsafe_allow_html=True)
@@ -72,7 +70,10 @@ def autenticar():
             submitted = st.form_submit_button("Entrar")
 
             if submitted:
-                if email in USERS and bcrypt.checkpw(senha.encode(), PASSWORD_HASH):
+                if email in USERS and bcrypt.checkpw(
+                    senha.encode(),
+                    PASSWORD_HASH
+                ):
                     st.session_state.auth = True
                     st.rerun()
                 else:
