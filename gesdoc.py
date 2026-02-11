@@ -5,7 +5,6 @@ import streamlit as st
 import fiona
 import geopandas as gpd
 import bcrypt
-from dotenv import load_dotenv
 import streamlit.components.v1 as components
 import base64
 import hashlib
