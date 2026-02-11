@@ -648,8 +648,17 @@ def visualizar_arquivo(path: Path, altura=700):
 
     if ext == ".pdf":
         st.markdown(f"### 📄 {path.name}")
-        st.pdf(str(path), height=700)
-        retur
+    
+        try:
+            with open(path, "rb") as f:
+                pdf_bytes = f.read()
+    
+            st.pdf(pdf_bytes, height=700)
+    
+        except Exception as e:
+            st.error(f"Erro ao carregar PDF: {e}")
+    
+        return
 
 
     # # WORD
