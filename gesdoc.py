@@ -647,16 +647,38 @@ def visualizar_arquivo(path: Path, altura=700):
         return
 
     # PDF
+    #  if ext == ".pdf":
+       #   st.markdown(f"### 📄 Visualização do PDF: {path.name}")
+       # try:
+          #    st.pdf(str(path), height=altura, key=f"pdf_viewer_{file_id}")
+        #  except Exception:
+           #   with open(path, "rb") as f:
+              #    b64 = base64.b64encode(f.read()).decode("utf-8")
+           #  html = f'<iframe src="data:application/pdf;base64,{b64}" width="100%" height="{altura}px"></iframe>'
+          #    st.components.v1.html(html, height=altura + 50)
+        #  return
+
+
     if ext == ".pdf":
-        st.markdown(f"### 📄 Visualização do PDF: {path.name}")
-        try:
-            st.pdf(str(path), height=altura, key=f"pdf_viewer_{file_id}")
-        except Exception:
-            with open(path, "rb") as f:
-                b64 = base64.b64encode(f.read()).decode("utf-8")
-            html = f'<iframe src="data:application/pdf;base64,{b64}" width="100%" height="{altura}px"></iframe>'
-            st.components.v1.html(html, height=altura + 50)
-        return
+    st.markdown(f"### 📄 Visualização do PDF: {path.name}")
+    
+    with open(path, "rb") as f:
+        pdf_bytes = f.read()
+    
+    b64 = base64.b64encode(pdf_bytes).decode("utf-8")
+    
+    pdf_display = f"""
+        <iframe
+            src="data:application/pdf;base64,{b64}"
+            width="100%"
+            height="{altura}px"
+            type="application/pdf">
+        </iframe>
+    """
+    
+    st.markdown(pdf_display, unsafe_allow_html=True)
+    return
+
 
     # # WORD
     # if ext in [".docx", ".doc"]:
