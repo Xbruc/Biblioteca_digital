@@ -37,8 +37,11 @@ fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 
 load_dotenv()
 
-USERS = os.getenv("AUTH_USERS", "").split(",")
-PASSWORD_HASH_ENV = os.getenv("AUTH_PASSWORD_HASH")
+#USERS = os.getenv("AUTH_USERS", "").split(",")
+#PASSWORD_HASH_ENV = os.getenv("AUTH_PASSWORD_HASH")
+
+st.secrets["AUTH_USERS"]
+st.secrets["PASSWORD_HASH"]
 
 if not PASSWORD_HASH_ENV:
     raise RuntimeError("AUTH_PASSWORD_HASH não definida")
