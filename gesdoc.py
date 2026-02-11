@@ -42,10 +42,10 @@ fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
 USERS = st.secrets["AUTH_USERS"].split(",")
 PASSWORD_HASH = st.secrets["PASSWORD_HASH"].encode()
 
-if not PASSWORD_HASH_ENV:
-    raise RuntimeError("AUTH_PASSWORD_HASH não definida")
+#if not PASSWORD_HASH_ENV:
+#    raise RuntimeError("AUTH_PASSWORD_HASH não definida")
 
-PASSWORD_HASH = PASSWORD_HASH_ENV.encode()
+#PASSWORD_HASH = PASSWORD_HASH_ENV.encode()
 
 def autenticar():
 
